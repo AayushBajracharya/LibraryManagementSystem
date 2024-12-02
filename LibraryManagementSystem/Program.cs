@@ -1,9 +1,11 @@
 using LibraryManagementSystem.Infrastructure;
+using LibraryManagementSystem.Mapper;
 using LibraryManagementSystem.Repositories;
 using LibraryManagementSystem.Services;
 using LibraryManagementSystem.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +18,7 @@ builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 
 builder.Services.AddScoped<JwtTokenHelper>();
-
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
