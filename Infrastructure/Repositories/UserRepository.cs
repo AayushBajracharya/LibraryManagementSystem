@@ -2,6 +2,7 @@
 using LibraryManagementSystem.Modles;
 using System.Data.SqlClient;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace LibraryManagementSystem.Repositories
 {

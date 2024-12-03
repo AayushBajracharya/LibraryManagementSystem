@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace LibraryManagementSystem.CQRS.Commands
+namespace Application.Handlers.StudentHandlers
 {
     public class UpdateStudentCommand : IRequest<bool>
     {

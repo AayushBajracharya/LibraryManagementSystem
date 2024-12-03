@@ -1,8 +1,9 @@
-﻿using LibraryManagementSystem.Modles;
+﻿using LibraryManagementSystem.CQRS.Queries;
+using LibraryManagementSystem.Modles;
 using LibraryManagementSystem.Repositories;
 using MediatR;
 
-namespace LibraryManagementSystem.CQRS.Queries.Handlers
+namespace Application.Handlers.StudentHandlers
 {
     public class GetStudentByIdQueryHandler : IRequestHandler<GetStudentByIdQuery, Students>
     {

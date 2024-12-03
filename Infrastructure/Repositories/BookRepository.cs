@@ -1,83 +1,84 @@
-﻿using Dapper;
-using LibraryManagementSystem.Modles;
-using LibraryManagementSystem.Repositories;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using Dapper;
+using LibraryManagementSystem.Modles;
+using Microsoft.Extensions.Configuration;
 
-namespace LibraryManagementSystem.Infrastructure
+namespace Infrastructure.Repositories
 {
-    public class StudentRepository : IStudentRepository
+    public class BookRepository : IBookRepository
     {
         private readonly string _connectionString;
 
-        public StudentRepository(IConfiguration configuration)
+        public BookRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<IEnumerable<Students>> GetAllStudentsAsync()
+        public async Task<IEnumerable<Books>> GetAllBooksAsync()
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "SE");
 
-                return await connection.QueryAsync<Students>(
-                    "SP_Students",
+                return await connection.QueryAsync<Books>(
+                    "SP_Books",
                     parameters,
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task<Students> GetStudentByIdAsync(int id)
+        public async Task<Books> GetBookByIdAsync(int id)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "SE");
-                parameters.Add("@StudentId", id);
+                parameters.Add("@BookId", id);
 
-                return await connection.QueryFirstOrDefaultAsync<Students>(
-                    "SP_Students",
+                return await connection.QueryFirstOrDefaultAsync<Books>(
+                    "SP_Books",
                     parameters,
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task<int> AddStudentAsync(Students student)
+        public async Task<int> AddBookAsync(Books book)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "I");
-                parameters.Add("@Name", student.Name);
-                parameters.Add("@Email", student.Email);
-                parameters.Add("@ContactNumber", student.ContactNumber);
-                parameters.Add("@Department", student.Department);
+                parameters.Add("@Title", book.Title);
+                parameters.Add("@AuthorId", book.AuthorId);
+                parameters.Add("@Genre", book.Genre);
+                parameters.Add("@ISBN", book.ISBN);
+                parameters.Add("@Quantity", book.Quantity);
 
-                // Retrieve the new Student ID
                 return await connection.ExecuteScalarAsync<int>(
-                    "SP_Students",
+                    "SP_Books",
                     parameters,
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-
-        public async Task<bool> UpdateStudentAsync(Students student)
+        public async Task<bool> UpdateBookAsync(Books book)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "U");
-                parameters.Add("@StudentId", student.StudentId);
-                parameters.Add("@Name", student.Name);
-                parameters.Add("@Email", student.Email);
-                parameters.Add("@ContactNumber", student.ContactNumber);
-                parameters.Add("@Department", student.Department);
+                parameters.Add("@BookId", book.BookId);
+                parameters.Add("@Title", book.Title);
+                parameters.Add("@AuthorId", book.AuthorId);
+                parameters.Add("@Genre", book.Genre);
+                parameters.Add("@ISBN", book.ISBN);
+                parameters.Add("@Quantity", book.Quantity);
 
                 var rowsAffected = await connection.ExecuteAsync(
-                    "SP_Students",
+                    "SP_Books",
                     parameters,
                     commandType: CommandType.StoredProcedure);
 
@@ -85,16 +86,16 @@ namespace LibraryManagementSystem.Infrastructure
             }
         }
 
-        public async Task<bool> DeleteStudentAsync(int id)
+        public async Task<bool> DeleteBookAsync(int id)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "D");
-                parameters.Add("@StudentId", id);
+                parameters.Add("@BookId", id);
 
                 var rowsAffected = await connection.ExecuteAsync(
-                    "SP_Students",
+                    "SP_Books",
                     parameters,
                     commandType: CommandType.StoredProcedure);
 
