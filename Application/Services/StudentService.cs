@@ -1,44 +1,41 @@
-﻿using Application.Handlers.StudentHandlers;
-using LibraryManagementSystem.CQRS.Commands;
-using LibraryManagementSystem.CQRS.Queries;
-using LibraryManagementSystem.Modles;
+﻿using LibraryManagementSystem.Modles;
 using LibraryManagementSystem.Repositories;
-using MediatR;
+
 
 namespace LibraryManagementSystem.Services
 {
     public class StudentService : IStudentService
     {
-        private readonly IMediator _mediator;
+        private readonly IStudentRepository _studentRepository;
 
-        public StudentService(IMediator mediator)
+        public StudentService(IStudentRepository studentRepository)
         {
-            _mediator = mediator;
+            _studentRepository = studentRepository;
         }
 
         public async Task<IEnumerable<Students>> GetAllStudentsAsync()
         {
-            return await _mediator.Send(new GetAllStudentsQuery());
+            return await _studentRepository.GetAllStudentsAsync();
         }
 
         public async Task<Students> GetStudentByIdAsync(int id)
         {
-            return await _mediator.Send(new GetStudentByIdQuery(id));
+            return await _studentRepository.GetStudentByIdAsync(id);
         }
 
         public async Task<int> AddStudentAsync(Students student)
         {
-            return await _mediator.Send(new AddStudentCommand(student.Name, student.Email, student.ContactNumber, student.Department));
+            return await _studentRepository.AddStudentAsync(student);
         }
 
         public async Task<bool> UpdateStudentAsync(Students student)
         {
-            return await _mediator.Send(new UpdateStudentCommand(student.StudentId, student.Name, student.Email, student.ContactNumber, student.Department));
+            return await _studentRepository.UpdateStudentAsync(student);
         }
 
         public async Task<bool> DeleteStudentAsync(int id)
         {
-            return await _mediator.Send(new DeleteStudentCommand(id));
+            return await _studentRepository.DeleteStudentAsync(id);
         }
     }
 }

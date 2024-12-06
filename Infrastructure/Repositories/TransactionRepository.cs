@@ -6,72 +6,78 @@ using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories
 {
-    public class AuthorRepository : IAuthorRepository
+    public class TransactionRepository : ITransactionRepository
     {
         private readonly string _connectionString;
 
-        public AuthorRepository(IConfiguration configuration)
+        public TransactionRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<IEnumerable<Authors>> GetAllAuthorsAsync()
+        public async Task<IEnumerable<Transactions>> GetAllTransactionsAsync()
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "SE");
 
-                return await connection.QueryAsync<Authors>(
-                    "SP_Authors",
+                return await connection.QueryAsync<Transactions>(
+                    "SP_Transactions",
                     parameters,
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task<Authors> GetAuthorByIdAsync(int id)
+        public async Task<Transactions> GetTransactionByIdAsync(int id)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "SE");
-                parameters.Add("@AuthorID", id);
+                parameters.Add("@TransactionId", id);
 
-                return await connection.QueryFirstOrDefaultAsync<Authors>(
-                    "SP_Authors",
+                return await connection.QueryFirstOrDefaultAsync<Transactions>(
+                    "SP_Transactions",
                     parameters,
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task<int> AddAuthorAsync(Authors author)
+        public async Task<int> AddTransactionAsync(Transactions transaction)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "I");
-                parameters.Add("@Name", author.Name);
-                parameters.Add("@Bio", author.Bio);
+                parameters.Add("@StudentId", transaction.StudentId);
+                parameters.Add("@UserId", transaction.UserId);
+                parameters.Add("@BookId", transaction.BookId);
+                parameters.Add("@TransactionType", transaction.TransactionType);
+                parameters.Add("@Date", transaction.Date);
 
                 return await connection.ExecuteScalarAsync<int>(
-                    "SP_Authors",
+                    "SP_Transactions",
                     parameters,
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task<bool> UpdateAuthorAsync(Authors author)
+        public async Task<bool> UpdateTransactionAsync(Transactions transaction)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "U");
-                parameters.Add("@AuthorID", author.AuthorID);
-                parameters.Add("@Name", author.Name);
-                parameters.Add("@Bio", author.Bio);
+                parameters.Add("@TransactionId", transaction.TransactionId);
+                parameters.Add("@StudentId", transaction.StudentId);
+                parameters.Add("@UserId", transaction.UserId);
+                parameters.Add("@BookId", transaction.BookId);
+                parameters.Add("@TransactionType", transaction.TransactionType);
+                parameters.Add("@Date", transaction.Date);
 
                 var rowsAffected = await connection.ExecuteAsync(
-                    "SP_Authors",
+                    "SP_Transactions",
                     parameters,
                     commandType: CommandType.StoredProcedure);
 
@@ -79,21 +85,20 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> DeleteAuthorAsync(int id)
+        public async Task<bool> DeleteTransactionAsync(int id)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@Flag", "D");
-                parameters.Add("@AuthorID", id);
+                parameters.Add("@TransactionId", id);
 
                 var rowsAffected = await connection.ExecuteAsync(
-                    "SP_Authors",
+                    "SP_Transactions",
                     parameters,
                     commandType: CommandType.StoredProcedure);
 
-                bool b=  rowsAffected > 0;
-                return b;
+                return rowsAffected > 0;
             }
         }
     }

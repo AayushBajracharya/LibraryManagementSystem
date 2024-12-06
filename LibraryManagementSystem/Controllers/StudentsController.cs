@@ -1,5 +1,8 @@
-﻿using LibraryManagementSystem.Modles;
-using LibraryManagementSystem.Services;
+﻿using Application.Handlers.StudentHandlers;
+using LibraryManagementSystem.CQRS.Commands;
+using LibraryManagementSystem.CQRS.Queries;
+using LibraryManagementSystem.Modles;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementSystem.Controllers
@@ -8,24 +11,24 @@ namespace LibraryManagementSystem.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        private readonly IStudentService _studentService;
+        private readonly IMediator _mediator;
 
-        public StudentsController(IStudentService studentService)
+        public StudentsController(IMediator mediator)
         {
-            _studentService = studentService;
+            _mediator = mediator;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllStudents()
         {
-            var students = await _studentService.GetAllStudentsAsync();
+            var students = await _mediator.Send(new GetAllStudentsQuery());
             return Ok(students);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStudentById(int id)
         {
-            var student = await _studentService.GetStudentByIdAsync(id);
+            var student = await _mediator.Send(new GetStudentByIdQuery(id));
             if (student == null) return NotFound();
             return Ok(student);
         }
@@ -34,7 +37,7 @@ namespace LibraryManagementSystem.Controllers
         public async Task<IActionResult> AddStudent([FromBody] Students student)
         {
             if (student == null) return BadRequest();
-            var result = await _studentService.AddStudentAsync(student);
+            var result = await _mediator.Send(new AddStudentCommand(student.Name, student.Email, student.ContactNumber, student.Department));
             return CreatedAtAction(nameof(GetStudentById), new { id = result }, student);
         }
 
@@ -42,7 +45,7 @@ namespace LibraryManagementSystem.Controllers
         public async Task<IActionResult> UpdateStudent(int id, [FromBody] Students student)
         {
             if (id != student.StudentId) return BadRequest();
-            var result = await _studentService.UpdateStudentAsync(student);
+            var result = await _mediator.Send(new UpdateStudentCommand(student.StudentId, student.Name, student.Email, student.ContactNumber, student.Department));
             if (!result) return NotFound();
             return NoContent();
         }
@@ -50,7 +53,7 @@ namespace LibraryManagementSystem.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStudent(int id)
         {
-            var result = await _studentService.DeleteStudentAsync(id);
+            var result = await _mediator.Send(new DeleteStudentCommand(id));
             if (!result) return NotFound();
             return NoContent();
         }
