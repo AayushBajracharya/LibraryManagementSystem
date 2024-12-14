@@ -34,7 +34,7 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddBook([FromBody] Books book)
+        public async Task<IActionResult> AddBook(Books book)
         {
             if (book == null) return BadRequest();
             var result = await _mediator.Send(new AddBookCommand(book.Title, book.AuthorId, book.Genre, book.ISBN, book.Quantity));

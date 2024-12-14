@@ -10,6 +10,7 @@ using MediatR;
 using Application.Queries.StudentQueries;
 using Application.Services;
 using Infrastructure.Repositories;
+using Infrastructure.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,8 +26,9 @@ builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
-
-
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddSingleton<Email>();
+builder.Services.AddHostedService<DailyEmailService>();
 builder.Services.AddScoped<JwtTokenHelper>();
 /*builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 */
